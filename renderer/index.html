@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>Desktop Pet</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="drag-region">
+    <div id="pet-stage">
+      <div id="pet">🐱</div>
+      <div id="reaction"></div>
+    </div>
+  </div>
+
+  <div id="stats">
+    <div class="bar-row">
+      <span class="label">🍖</span>
+      <div class="track"><div id="bar-satiety" class="fill"></div></div>
+    </div>
+    <div class="bar-row">
+      <span class="label">😊</span>
+      <div class="track"><div id="bar-happiness" class="fill"></div></div>
+    </div>
+    <div class="bar-row">
+      <span class="label">⚡</span>
+      <div class="track"><div id="bar-energy" class="fill"></div></div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <button id="btn-feed" title="餵食">🍖</button>
+    <button id="btn-play" title="玩耍">🎾</button>
+    <button id="btn-sleep" title="睡覺 / 叫醒">😴</button>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
