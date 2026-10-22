@@ -60,8 +60,8 @@ function pushState() {
 
 function rebuildTrayMenu() {
   const menu = Menu.buildFromTemplate([
-    { label: '餵食 🍖', click: () => doAction('feed') },
-    { label: '玩耍 🎾', click: () => doAction('play') },
+    { label: '餵食 🍰', click: () => doAction('feed') },
+    { label: '抓蝴蝶 🦋', click: () => doAction('play') },
     { label: state.sleeping ? '叫醒 ⏰' : '睡覺 😴', click: () => doAction('sleep') },
     { type: 'separator' },
     {
@@ -99,8 +99,8 @@ function doAction(type) {
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 180,
-    height: 230,
+    width: 240,
+    height: 310,
     frame: false,
     transparent: true,
     hasShadow: false,

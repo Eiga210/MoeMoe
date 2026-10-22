@@ -1,6 +1,4 @@
 const petEl = document.getElementById('pet');
-const reactionEl = document.getElementById('reaction');
-const stageEl = document.getElementById('pet-stage');
 
 const bars = {
   satiety: document.getElementById('bar-satiety'),
@@ -8,11 +6,16 @@ const bars = {
   energy: document.getElementById('bar-energy'),
 };
 
+const FRAME_CLASSES = [
+  'frame-idle', 'frame-blink', 'frame-turn', 'frame-back',
+  'frame-sparkle', 'frame-love', 'frame-confused', 'frame-sleep', 'frame-wave',
+];
+
 const STAGE_MARGIN = 24; // keep pet clear of the stage edges
 let walkDirection = 1;
 let walkPos = 50; // percent
 let latestState = null;
-let reacting = false;
+let reactionMood = null; // 'sparkle' | 'love' | null while a transient reaction is playing
 
 function barColor(value) {
   if (value < 30) return '#e53935';
@@ -28,38 +31,50 @@ function renderBars(state) {
   }
 }
 
-function faceFor(state) {
-  if (state.sleeping) return '😴';
+function setFrame(name) {
+  petEl.classList.remove(...FRAME_CLASSES);
+  petEl.classList.add(`frame-${name}`);
+}
+
+function currentMood(state) {
+  if (reactionMood) return reactionMood;
+  if (state.sleeping) return 'sleep';
   const lowest = Math.min(state.satiety, state.happiness, state.energy);
-  if (lowest < 20) return '😿';
-  if (state.happiness > 80) return '😻';
-  return '🐱';
+  if (lowest < 20) return 'confused';
+  return null;
 }
 
 function renderPet(state) {
-  petEl.textContent = faceFor(state);
-  petEl.classList.toggle('sleeping', state.sleeping);
-  petEl.classList.toggle('idle', !state.sleeping && reacting);
-  petEl.classList.toggle('walk', !state.sleeping && !reacting);
-  if (state.sleeping) {
-    petEl.style.left = '50%';
+  const mood = currentMood(state);
+  petEl.classList.remove('walk', 'sleeping', 'idle-anim');
+
+  if (mood) {
+    setFrame(mood);
+    if (mood === 'sleep') {
+      petEl.classList.add('sleeping');
+      petEl.style.left = '50%';
+    } else {
+      petEl.classList.add('idle-anim');
+    }
+  } else {
+    petEl.classList.add('walk');
+    setFrame('idle');
   }
 }
 
-function showReaction(emoji) {
-  reacting = true;
-  reactionEl.textContent = emoji;
-  reactionEl.classList.add('show');
+function showReaction(mood) {
+  reactionMood = mood;
   clearTimeout(showReaction._t);
   showReaction._t = setTimeout(() => {
-    reactionEl.classList.remove('show');
-    reacting = false;
+    reactionMood = null;
     if (latestState) renderPet(latestState);
   }, 1200);
+  if (latestState) renderPet(latestState);
 }
 
 function walkStep() {
-  if (!latestState || latestState.sleeping || reacting) return;
+  if (!latestState || currentMood(latestState)) return;
+
   walkPos += walkDirection * 6;
   if (walkPos >= 100 - STAGE_MARGIN / 1.8) {
     walkPos = 100 - STAGE_MARGIN / 1.8;
@@ -74,6 +89,15 @@ function walkStep() {
 
 setInterval(walkStep, 700);
 
+// Occasional blink for a bit of life while idle/walking.
+setInterval(() => {
+  if (!latestState || currentMood(latestState)) return;
+  setFrame('blink');
+  setTimeout(() => {
+    if (latestState && !currentMood(latestState)) setFrame('idle');
+  }, 150);
+}, 3500);
+
 window.petAPI.onUpdate((state) => {
   const prev = latestState;
   latestState = state;
@@ -81,8 +105,8 @@ window.petAPI.onUpdate((state) => {
   renderPet(state);
 
   if (prev) {
-    if (state.satiety > prev.satiety + 1) showReaction('🍖');
-    else if (state.happiness > prev.happiness + 1 && !state.sleeping) showReaction('🎾');
+    if (state.satiety > prev.satiety + 1) showReaction('sparkle');
+    else if (state.happiness > prev.happiness + 1 && !state.sleeping) showReaction('love');
   }
 
   document.getElementById('btn-sleep').textContent = state.sleeping ? '⏰' : '😴';

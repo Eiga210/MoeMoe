@@ -7,8 +7,8 @@
 }
 
 html, body {
-  width: 180px;
-  height: 230px;
+  width: 240px;
+  height: 310px;
   background: transparent;
   overflow: hidden;
 }
@@ -20,25 +20,44 @@ html, body {
 #pet-stage {
   position: relative;
   width: 100%;
-  height: 140px;
+  height: 190px;
 }
 
 #pet {
   position: absolute;
-  bottom: 10px;
+  bottom: 14px;
   left: 50%;
-  font-size: 48px;
-  line-height: 1;
+  width: 166px;
+  height: 160px;
   transform: translateX(-50%);
   transition: left 0.6s linear;
-  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.25));
+  background-image: url('assets/pet-sprite.png');
+  background-repeat: no-repeat;
+  background-size: 400% 300%;
+  image-rendering: -webkit-optimize-contrast;
 }
+
+/* row 1: idle / blink / turn / back */
+#pet.frame-idle      { background-position: 0% 0%; }
+#pet.frame-blink     { background-position: 33.3333% 0%; }
+#pet.frame-turn      { background-position: 66.6667% 0%; }
+#pet.frame-back      { background-position: 100% 0%; }
+
+/* row 2: sparkle / love / confused / sleep */
+#pet.frame-sparkle   { background-position: 0% 50%; }
+#pet.frame-love      { background-position: 33.3333% 50%; }
+#pet.frame-confused  { background-position: 66.6667% 50%; }
+#pet.frame-sleep     { background-position: 100% 50%; }
+
+/* row 3: wave (only the last slot is used) */
+#pet.frame-wave      { background-position: 100% 100%; }
 
 #pet.walk {
   animation: bob 0.6s ease-in-out infinite;
 }
 
-#pet.idle {
+#pet.idle-anim {
   animation: breathe 2.2s ease-in-out infinite;
 }
 
@@ -65,47 +84,32 @@ html, body {
   50% { transform: translateX(-50%) scale(1.03); }
 }
 
-#reaction {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 22px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s, transform 0.4s;
-}
-
-#reaction.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-6px);
-}
-
 #stats {
   -webkit-app-region: no-drag;
-  padding: 2px 10px;
+  padding: 2px 16px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
 }
 
 .bar-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .label {
-  font-size: 11px;
-  width: 14px;
+  font-size: 13px;
+  width: 16px;
 }
 
 .track {
   flex: 1;
-  height: 6px;
-  border-radius: 4px;
+  height: 8px;
+  border-radius: 5px;
   background: rgba(255, 255, 255, 0.35);
   overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .fill {
@@ -119,17 +123,18 @@ html, body {
   -webkit-app-region: no-drag;
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 12px;
+  margin-top: 10px;
 }
 
 #controls button {
   border: none;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 15px;
-  background: rgba(255, 255, 255, 0.55);
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: transform 0.15s, background-color 0.15s;
 }
