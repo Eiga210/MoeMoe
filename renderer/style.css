@@ -36,6 +36,7 @@ html, body {
   background-repeat: no-repeat;
   background-size: 400% 300%;
   image-rendering: -webkit-optimize-contrast;
+  cursor: pointer;
 }
 
 /* row 1: idle / blink / turn / back */

@@ -107,19 +107,23 @@ setInterval(() => {
 }, 3500);
 
 window.petAPI.onUpdate((state) => {
-  const prev = latestState;
   latestState = state;
   renderBars(state);
   renderPet(state);
-
-  if (prev) {
-    if (state.satiety > prev.satiety + 1) showReaction('sparkle');
-    else if (state.happiness > prev.happiness + 1 && !state.sleeping) showReaction('love');
-  }
-
   document.getElementById('btn-sleep').textContent = state.sleeping ? '⏰' : '😴';
 });
 
-document.getElementById('btn-feed').addEventListener('click', () => window.petAPI.sendAction('feed'));
-document.getElementById('btn-play').addEventListener('click', () => window.petAPI.sendAction('play'));
+petEl.addEventListener('click', () => showReaction('wave'));
+
+document.getElementById('btn-feed').addEventListener('click', () => {
+  window.petAPI.sendAction('feed');
+  showReaction('sparkle');
+});
+
+document.getElementById('btn-play').addEventListener('click', () => {
+  window.petAPI.sendAction('play');
+  const tooTired = latestState && !latestState.sleeping && latestState.energy < 10;
+  showReaction(tooTired ? 'confused' : 'love');
+});
+
 document.getElementById('btn-sleep').addEventListener('click', () => window.petAPI.sendAction('sleep'));

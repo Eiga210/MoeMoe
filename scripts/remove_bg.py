@@ -199,6 +199,59 @@ for name in ('confused',):
         main_label = int(np.argmax(sizes)) + 1
         cell_alpha[(cell_labels != main_label) & (cell_labels != 0)] = 0
 
+# The "sleep" pose's rump runs right off the edge of the source sheet
+# (there's no more image data beyond it, it's not a removal miss), which
+# reads as a harsh flat cutoff. Fade it out over the last stretch of
+# pixels instead of leaving a hard edge.
+FADE_PX = 15
+r, c = CELL_OF['sleep']
+y0, y1 = ROW_BOUNDS[r]
+x0, x1 = COL_BOUNDS[c]
+if x1 >= arr.shape[1] - 2:
+    cell_alpha = alpha[y0:y1, x0:x1].astype(np.float32)
+    cell_w = cell_alpha.shape[1]
+    fade_start = max(0, cell_w - FADE_PX)
+    ramp = np.ones(cell_w, dtype=np.float32)
+    ramp[fade_start:] = np.linspace(1, 0, cell_w - fade_start)
+    alpha[y0:y1, x0:x1] = (cell_alpha * ramp[np.newaxis, :]).astype(np.uint8)
+
+# The "love" pose's left-side heart is attached to the head by a thin
+# stick (itself an artifact of the background-sealing step above closing
+# a too-narrow gap), so it's fused into the same connected component as
+# the character. Erode to sever the bridge, remove every resulting piece
+# that sits in the left part of the cell (the heart often splits into a
+# couple of pieces at this erosion depth, so sweep all of them, not just
+# the biggest), then clean up anti-aliased fragments left behind.
+r, c = CELL_OF['love']
+y0, y1 = ROW_BOUNDS[r]
+x0, x1 = COL_BOUNDS[c]
+cell_alpha = alpha[y0:y1, x0:x1]
+opaque = cell_alpha > 10
+SEVER_ITER = 6
+eroded = ndimage.binary_erosion(opaque, iterations=SEVER_ITER)
+cell_labels, cell_n = ndimage.label(eroded, structure=np.ones((3, 3)))
+if cell_n > 1:
+    sizes = ndimage.sum(eroded, cell_labels, index=np.arange(1, cell_n + 1))
+    main_label = int(np.argmax(sizes)) + 1
+    cell_w = opaque.shape[1]
+    remove_seed = np.zeros_like(opaque)
+    for i in range(1, cell_n + 1):
+        if i == main_label:
+            continue
+        xs = np.where(cell_labels == i)[1]
+        if xs.mean() < cell_w * 0.4:  # left-side piece(s) = the stray heart
+            remove_seed |= (cell_labels == i)
+    remove_mask = ndimage.binary_dilation(remove_seed, iterations=SEVER_ITER) & opaque
+    cell_alpha[remove_mask] = 0
+
+# despeckle whatever faint anti-aliased fragments are left over
+faint = cell_alpha > 5
+frag_labels, frag_n = ndimage.label(faint, structure=np.ones((3, 3)))
+if frag_n > 0:
+    frag_sizes = ndimage.sum(faint, frag_labels, index=np.arange(1, frag_n + 1))
+    tiny = np.flatnonzero(frag_sizes < 80) + 1
+    cell_alpha[np.isin(frag_labels, tiny)] = 0
+
 PAD = 6
 tight = {}
 for r, (y0, y1) in enumerate(ROW_BOUNDS):
