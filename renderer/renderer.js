@@ -1,4 +1,5 @@
 const petEl = document.getElementById('pet');
+const stageEl = document.getElementById('pet-stage');
 
 const bars = {
   satiety: document.getElementById('bar-satiety'),
@@ -11,7 +12,6 @@ const FRAME_CLASSES = [
   'frame-sparkle', 'frame-love', 'frame-confused', 'frame-sleep', 'frame-wave',
 ];
 
-const STAGE_MARGIN = 24; // keep pet clear of the stage edges
 let walkDirection = 1;
 let walkPos = 50; // percent
 let latestState = null;
@@ -72,15 +72,23 @@ function showReaction(mood) {
   if (latestState) renderPet(latestState);
 }
 
+function walkMarginPercent() {
+  // half the pet's own width, expressed as a % of the stage, so "left: X%"
+  // (which centers the pet via translateX(-50%)) never pushes it past the edge
+  const stageWidth = stageEl.clientWidth || 1;
+  return ((petEl.offsetWidth / 2) / stageWidth) * 100;
+}
+
 function walkStep() {
   if (!latestState || currentMood(latestState)) return;
 
+  const margin = walkMarginPercent();
   walkPos += walkDirection * 6;
-  if (walkPos >= 100 - STAGE_MARGIN / 1.8) {
-    walkPos = 100 - STAGE_MARGIN / 1.8;
+  if (walkPos >= 100 - margin) {
+    walkPos = 100 - margin;
     walkDirection = -1;
-  } else if (walkPos <= STAGE_MARGIN / 1.8) {
-    walkPos = STAGE_MARGIN / 1.8;
+  } else if (walkPos <= margin) {
+    walkPos = margin;
     walkDirection = 1;
   }
   petEl.style.left = `${walkPos}%`;
