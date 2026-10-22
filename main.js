@@ -5,7 +5,7 @@ const fs = require('fs');
 const STATE_PATH = path.join(app.getPath('userData'), 'pet-state.json');
 
 const DECAY_PER_MIN = { satiety: 1, happiness: 0.7, energy: 0.5 };
-const SLEEP_ENERGY_PER_MIN = 3;
+const SLEEP_ENERGY_PER_MIN = 100 / 15; // full recharge (0 -> 100) takes 15 minutes
 const MAX_OFFLINE_MINUTES = 12 * 60; // cap catch-up decay so leaving it closed for days doesn't zero everything
 const TICK_MS = 10000;
 
