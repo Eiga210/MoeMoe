@@ -1,7 +1,7 @@
 // Browser-only build: same pet logic as the Electron app, but state lives in
 // localStorage instead of a file, and there's no window/tray to drive.
 
-const STORAGE_KEY = 'desktop-pet-state';
+const STORAGE_KEY = 'pien-neko-state';
 const TICK_MS = 10000;
 const DECAY_PER_MIN = { satiety: 1, happiness: 0.7, energy: 0.5 };
 const SLEEP_ENERGY_PER_MIN = 100 / 15; // full recharge (0 -> 100) takes 15 minutes
