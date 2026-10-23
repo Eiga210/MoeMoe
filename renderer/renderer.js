@@ -127,3 +127,5 @@ document.getElementById('btn-play').addEventListener('click', () => {
 });
 
 document.getElementById('btn-sleep').addEventListener('click', () => window.petAPI.sendAction('sleep'));
+
+document.getElementById('btn-music').addEventListener('click', () => window.petAPI.playRandomSong());

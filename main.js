@@ -1,8 +1,20 @@
-const { app, BrowserWindow, Tray, nativeImage, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, Tray, nativeImage, ipcMain, Menu, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
 const STATE_PATH = path.join(app.getPath('userData'), 'pet-state.json');
+
+const SONGS = [
+  'https://youtu.be/_1gTMhvRtB8',
+  'https://youtu.be/YejZlOz-hm0',
+  'https://youtu.be/DJdpqIGp1XA',
+  'https://youtu.be/cfwFRk7_zHM',
+  'https://youtu.be/MttVhi-JDkU',
+  'https://youtu.be/ksEcmHz4gg4',
+  'https://youtu.be/8kAVEh9Up3c',
+  'https://youtu.be/Y6uOJ_jw6cQ',
+  'https://youtu.be/dQw4w9WgXcQ',
+];
 
 const DECAY_PER_MIN = { satiety: 1, happiness: 0.7, energy: 0.5 };
 const SLEEP_ENERGY_PER_MIN = 100 / 15; // full recharge (0 -> 100) takes 15 minutes
@@ -63,6 +75,7 @@ function rebuildTrayMenu() {
     { label: '餵食 🍰', click: () => doAction('feed') },
     { label: '抓蝴蝶 🦋', click: () => doAction('play') },
     { label: state.sleeping ? '叫醒 ⏰' : '睡覺 😴', click: () => doAction('sleep') },
+    { label: '隨機音樂 🎵', click: () => shell.openExternal(SONGS[Math.floor(Math.random() * SONGS.length)]) },
     { type: 'separator' },
     {
       label: '顯示 / 隱藏',
@@ -132,6 +145,10 @@ app.whenReady().then(() => {
   win.webContents.once('did-finish-load', pushState);
 
   ipcMain.on('action', (_event, type) => doAction(type));
+  ipcMain.on('play-random-song', () => {
+    const url = SONGS[Math.floor(Math.random() * SONGS.length)];
+    shell.openExternal(url);
+  });
 });
 
 app.on('window-all-closed', () => {
