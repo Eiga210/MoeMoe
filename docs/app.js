@@ -8,16 +8,26 @@ const SLEEP_ENERGY_PER_MIN = 100 / 15; // full recharge (0 -> 100) takes 15 minu
 const MAX_OFFLINE_MINUTES = 12 * 60;
 
 const SONGS = [
-  'https://youtu.be/_1gTMhvRtB8',
-  'https://youtu.be/YejZlOz-hm0',
-  'https://youtu.be/DJdpqIGp1XA',
-  'https://youtu.be/cfwFRk7_zHM',
-  'https://youtu.be/MttVhi-JDkU',
-  'https://youtu.be/ksEcmHz4gg4',
-  'https://youtu.be/8kAVEh9Up3c',
-  'https://youtu.be/Y6uOJ_jw6cQ',
-  'https://youtu.be/dQw4w9WgXcQ',
+  { url: 'https://youtu.be/_1gTMhvRtB8', weight: 1 },
+  { url: 'https://youtu.be/YejZlOz-hm0', weight: 1 },
+  { url: 'https://youtu.be/DJdpqIGp1XA', weight: 1 },
+  { url: 'https://youtu.be/cfwFRk7_zHM', weight: 1 },
+  { url: 'https://youtu.be/MttVhi-JDkU', weight: 1 },
+  { url: 'https://youtu.be/ksEcmHz4gg4', weight: 1 },
+  { url: 'https://youtu.be/8kAVEh9Up3c', weight: 1 },
+  { url: 'https://youtu.be/Y6uOJ_jw6cQ', weight: 1 },
+  { url: 'https://youtu.be/dQw4w9WgXcQ', weight: 3 }, // the risky one, weighted up
 ];
+
+function pickSong() {
+  const total = SONGS.reduce((sum, s) => sum + s.weight, 0);
+  let r = Math.random() * total;
+  for (const s of SONGS) {
+    if (r < s.weight) return s.url;
+    r -= s.weight;
+  }
+  return SONGS[SONGS.length - 1].url;
+}
 
 function clamp(value) {
   return Math.max(0, Math.min(100, value));
@@ -216,7 +226,7 @@ document.getElementById('btn-play').addEventListener('click', () => {
 document.getElementById('btn-sleep').addEventListener('click', () => doAction('sleep'));
 
 document.getElementById('btn-music').addEventListener('click', () => {
-  const url = SONGS[Math.floor(Math.random() * SONGS.length)];
+  const url = pickSong();
   window.open(url, '_blank', 'noopener');
 });
 
