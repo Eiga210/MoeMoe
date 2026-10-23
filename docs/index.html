@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Desktop Pet — 網頁版</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main id="widget">
+    <div id="pet-stage">
+      <div id="pet"></div>
+    </div>
+
+    <div id="stats">
+      <div class="bar-row">
+        <span class="label">🍰</span>
+        <div class="track"><div id="bar-satiety" class="fill"></div></div>
+      </div>
+      <div class="bar-row">
+        <span class="label">😊</span>
+        <div class="track"><div id="bar-happiness" class="fill"></div></div>
+      </div>
+      <div class="bar-row">
+        <span class="label">⚡</span>
+        <div class="track"><div id="bar-energy" class="fill"></div></div>
+      </div>
+    </div>
+
+    <div id="controls">
+      <button id="btn-feed">🍰</button>
+      <button id="btn-play">🦋</button>
+      <button id="btn-sleep">😴</button>
+      <button id="btn-music">🎵</button>
+    </div>
+  </main>
+
+  <p id="note">養在這個網頁裡的版本 — 數值存在瀏覽器本機(離開分頁不會消失)。想要牠常駐桌面陪你的話,<a href="https://github.com/Eiga210/MoeMoe/releases/latest">下載桌面版</a>。</p>
+
+  <script src="app.js"></script>
+</body>
+</html>
